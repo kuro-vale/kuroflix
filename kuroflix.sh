@@ -1,17 +1,43 @@
 #!/bin/bash
-url="https://gototub.com"
 
 
-movie()
+get_url_titles()
 {
-# Get movies list after search
 read -p "What do you want to watch?: " search
-search=$(echo $search | tr ' ' '-')
-movies=$(curl -s "$url" -G -d "s=$search" | sed -n -E 's_^[[:space:]]*<a href=".*/watch-([^"]*)" data-url=.*_\1_p')
-for link in ${movies[*]}
-do
-	echo $link | sed "s/-full-movie.*/ /"
-done
+search=$(echo $search | tr ' ' '+')
+regex='s_^[[:space:]]*<a href="'$url'([^"]*)" class=.*_\1_p'
+media_links=$(curl -s "$url" -G -d "s=$search" | sed -n -E "$regex")
+if [ -z "$media_links" ]; then
+echo -e "No search results for $search\nVerify that you didn't have erros like: 'Abatar' instead of 'Avatar', 'Ironman' instead of 'Iron Man'"
+exit
+fi
 }
 
-movie
+
+movies_english()
+{
+url="https://gototub.com/"
+get_url_titles
+i=1
+# deprecated
+for link in ${media_links[*]}
+do
+	echo "$i. $link" # | sed "s/-full-movie.*/ /"
+	i=$((i+1))
+done
+choice=3
+i=1
+for link in ${media_links[*]}
+do
+	if [ $choice -eq $i ]; then
+	movie=$link
+	fi
+	i=$((i+1))
+done
+echo $movie
+#firefox "$url/$movie" >/dev/null 2>&1
+echo "Goodbye"
+}
+
+
+movies_english

@@ -31,6 +31,7 @@ done
 
 reproduce_embedded_link()
 {
+	echo "Reproducing $media"
 	embedded_links=$(curl -s "$url$media" | sed -n -E "$regex_embed")
 	for link in ${embedded_links[*]}
 	do
@@ -42,6 +43,20 @@ reproduce_embedded_link()
 		echo "Goodbye"
 		exit
 	done
+}
+
+
+select_episodes()
+{
+	# Get list of episodes, then user will choice which episode reproduce
+	i=1
+	media_links=$(curl -s "$url$media" | sed -n -E "$regex_episodes")
+	for episode in ${media_links[*]}
+	do
+		echo "$i. $episode"
+		i=$((i+1))
+	done
+	get_user_choice
 }
 
 
@@ -65,8 +80,12 @@ get_user_choice
 regex_embed='s_[[:space:]]*<iframe src="([^"]*)" frameborder=.*_\1_p'
 # Distinguish between movie or series
 if [[ $media =~ ^series\/ ]]; then
+	# When series selected, search episodes an change $media to te selected episode
+	url_episodes="https://gototub.com/episode/"
+	regex_episodes='s_[[:space:]]*<a href="'$url_episodes'([^"]*)">.*_\1_p'
 	select_episodes
-	reproduce_embedded_link
+	url=$url_episodes
+	media+="/"  # Fix bug that don't allow to curl if episodes don't end with: /
 fi
 reproduce_embedded_link
 }

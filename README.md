@@ -17,6 +17,7 @@ git clone https://github.com/kuro-vale/kuroflix.git
 Initialize script
 
 ```bash
+cd kuroflix
 ./kuroflix.sh
 ```
 
@@ -34,4 +35,4 @@ If you enter an empty space when the script prompts you anything, maybe the scri
 
 I do not own any of the media this script show.
 
-I do not want to injury the sites scraped, this script was made for educational purposes only, what user do whit this script is not my responsability.
+I do not want to injury the sites scraped. This script was made for educational purposes only. What users do with this is not my responsibility.

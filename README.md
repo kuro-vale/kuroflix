@@ -2,9 +2,9 @@
 
 A bash script to browse and watch movies or series
 
-For english media this script scrapes [gototub](https://www.gototub.com)
+For english media this script scrapes [gototub](https://www.gototub.com/)
 
-For spanish media this tool scrapes (soon)
+For spanish media this tool scrapes [pelisplus](https://pelisplushd.net/)
 
 ## Download
 
@@ -23,7 +23,7 @@ cd kuroflix
 
 Then follow the instructions
 
-If you enter an empty space when the script prompts you anything, maybe the script will fail
+If you enter an empty space when the script prompts you anything, an error will appear
 
 ## Dependencies
 
@@ -35,4 +35,6 @@ If you enter an empty space when the script prompts you anything, maybe the scri
 
 I do not own any of the media this script show.
 
-I do not want to injury the sites scraped. This script was made for educational purposes only. What users do with this is not my responsibility.
+This script was made for educational purposes only.
+
+What users do with this is not my responsibility.

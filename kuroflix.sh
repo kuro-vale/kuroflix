@@ -31,6 +31,21 @@ get_user_choice()
 }
 
 
+select_episodes()
+{
+# Print a list of episodes, then user will choose which episode reproduce
+	clear
+	i=1
+	media_links=$(curl -s "$url$media" | sed -n -E "$regex_episodes")
+	for episode in ${media_links[*]}
+	do
+		echo "$i. $episode"
+		i=$((i+1))
+	done
+	get_user_choice
+}
+
+
 reproduce_embedded_link()
 {
 # Search the embedded link in the media url, then reproduce it in firefox
@@ -51,24 +66,43 @@ reproduce_embedded_link()
 }
 
 
-select_episodes()
+save_cache()
 {
-# Print a list of episodes, then user will choose which episode reproduce
-	clear
+# Save the variables needed to reproduce media in cache.tmp, cache_media save the url of the next episode
+	choice=$((choice+1))
 	i=1
-	media_links=$(curl -s "$url$media" | sed -n -E "$regex_episodes")
-	for episode in ${media_links[*]}
+	for link in ${media_links[*]}
 	do
-		echo "$i. $episode"
+		if [ $choice -eq $i ]; then
+		cache_media=$link
+		fi
 		i=$((i+1))
 	done
-	get_user_choice
+	if $english; then
+		echo -e "english=$english\nchoice=$choice\nurl='$url'\ncache_media='$cache_media'\nregex_embed='$regex_embed'\nmedia_links='${media_links[*]}'" > cache.tmp
+	else
+		echo -e "english=$english\nchoice=$choice\nurl='$url'\ncache_media='$cache_media'\nregex_embed=\"$regex_embed\"\nmedia_links='${media_links[*]}'" > cache.tmp
+	fi
+}
+
+
+reproduce_cache()
+{
+# Save the variables to reproduce the next episode, and reproduce the episode selected
+	rm cache.tmp
+	save_cache
+	media=$cache_media
+	if $english; then
+		media+="/"
+	fi
+	reproduce_embedded_link
 }
 
 
 media_english()
 {
 # Scrape the url to find movies or series
+	english=true
 	url="https://gototub.com/"
 	regex='s_^[[:space:]]*<a href="'$url'([^"]*)" data-url=.*_\1_p'
 	get_url_titles
@@ -100,30 +134,34 @@ media_english()
 }
 
 
-reproduce_cache()
+media_spanish()
 {
-# Save the variables to reproduce the next episode, and reproduce the episode selected
-	rm cache.tmp
-	save_cache
-	media=$cache_media
-	media+="/"
-	reproduce_embedded_link
-}
-
-
-save_cache()
-{
-# Save the variables needed to reproduce media in cache.tmp, cache_media save the url of the next episode
-	choice=$((choice+1))
+# Scraping spanish media
+	english=false
+	url="https://pelisplushd.net/search"
+	regex='s_^[[:space:]]*<a href="https:\/\/pelisplushd.net\/([^"]*)" class=.*_\1_p'
+	get_url_titles
+	url="https://pelisplushd.net/"
+	# Print media titles
 	i=1
 	for link in ${media_links[*]}
 	do
-		if [ $choice -eq $i ]; then
-		cache_media=$link
-		fi
+		echo "$i. $link"
 		i=$((i+1))
 	done
-	echo -e "choice=$choice\nurl='$url'\ncache_media='$cache_media'\nregex_embed='$regex_embed'\nmedia_links='${media_links[*]}'" > cache.tmp
+	get_user_choice
+	regex_embed="s_[[:space:]]*video\[[[:digit:]]\] = '([^']*)'.*_\1_p"
+	# Distinguis between movie or series
+	if [[ $media =~ ^serie\/.* ]]; then
+		# When series selected, search episodes an change $media to the selected episode
+		url_episodes="https://pelisplushd.net/serie/"
+		regex_episodes='s_[[:space:]]*<a href="'$url_episodes'([^"]*)" class=.*_\1_p'
+		select_episodes
+		url=$url_episodes
+		choice=$((choice-1))  # Prevent add2 to choice when saving cache
+		save_cache
+	fi
+	reproduce_embedded_link
 }
 
 
@@ -145,15 +183,15 @@ menu()
 	# Print the menu
 	while [ $selected_option -ne 5 ]
 	do
-		echo -e "Menu\n\n1. Watch movies or series in english\n5.exit"
+		echo -e "Menu\n\n1. Watch movies or series in english\n2. Watch movies or series in spanish\n5.exit"
 		read selected_option
 		case $selected_option in
 			1)
 				media_english
 			;;
-#			2)
-#				media_spanish
-#			;;
+			2)
+				media_spanish
+			;;
 			5)
 				clear
 				echo "Goodbye"

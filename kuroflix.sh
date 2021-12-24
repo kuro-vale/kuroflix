@@ -55,14 +55,18 @@ reproduce_embedded_link()
 	for link in ${embedded_links[*]}
 	do
 		$BROWSER $link >/dev/null 2>&1
-		read -p "Doesn't work? Press 5 to try with another link or enter to exit: " retry
-		if [ $retry -eq 5 ]; then
+		read -p "Want to try with another link? Y/N: " retry
+		if [ ${retry^^} = "Y" ]; then
 			continue
+		else
+			clear
+			echo "Goodbye"
+			exit
 		fi >/dev/null 2>&1
-		clear
-		echo "Goodbye"
-		exit
 	done
+	clear
+	echo "Sorry, can't find another link :(, Goodbye!"
+	exit
 }
 
 
@@ -78,10 +82,10 @@ save_cache()
 		fi
 		i=$((i+1))
 	done
-	if $english; then
-		echo -e "english=$english\nchoice=$choice\nurl='$url'\ncache_media='$cache_media'\nregex_embed='$regex_embed'\nmedia_links='${media_links[*]}'" > cache.tmp
+	if $gototub; then
+		echo -e "gototub=$gototub\nchoice=$choice\nurl='$url'\ncache_media='$cache_media'\nregex_embed='$regex_embed'\nmedia_links='${media_links[*]}'" > cache.tmp
 	else
-		echo -e "english=$english\nchoice=$choice\nurl='$url'\ncache_media='$cache_media'\nregex_embed=\"$regex_embed\"\nmedia_links='${media_links[*]}'" > cache.tmp
+		echo -e "gototub=$gototub\nchoice=$choice\nurl='$url'\ncache_media='$cache_media'\nregex_embed=\"$regex_embed\"\nmedia_links='${media_links[*]}'" > cache.tmp
 	fi
 }
 
@@ -92,7 +96,7 @@ reproduce_cache()
 	rm cache.tmp
 	save_cache
 	media=$cache_media
-	if $english; then
+	if $gototub; then
 		media+="/"
 	fi
 	reproduce_embedded_link
@@ -102,7 +106,7 @@ reproduce_cache()
 media_english()
 {
 # Scrape the url to find movies or series
-	english=true
+	gototub=true  # Fix bug that episodes in gototub dont reproduce if the url dont end with /
 	url="https://gototub.com/"
 	regex='s_^[[:space:]]*<a href="'$url'([^"]*)" data-url=.*_\1_p'
 	get_url_titles
@@ -134,21 +138,26 @@ media_english()
 }
 
 
-media_spanish()
+print_media_titles()
 {
-# Scraping spanish media
-	english=false
-	url="https://pelisplushd.net/search"
-	regex='s_^[[:space:]]*<a href="https:\/\/pelisplushd.net\/([^"]*)" class=.*_\1_p'
-	get_url_titles
-	url="https://pelisplushd.net/"
-	# Print media titles
 	i=1
 	for link in ${media_links[*]}
 	do
 		echo "$i. $link"
 		i=$((i+1))
 	done
+}
+
+
+media_spanish()
+{
+# Scrape spanish media
+	gototub=false
+	url="https://pelisplushd.net/search"
+	regex='s_^[[:space:]]*<a href="https:\/\/pelisplushd.net\/([^"]*)" class=.*_\1_p'
+	get_url_titles
+	url="https://pelisplushd.net/"
+	print_media_titles
 	get_user_choice
 	regex_embed="s_[[:space:]]*video\[[[:digit:]]\] = '([^']*)'.*_\1_p"
 	# Distinguis between movie or series
@@ -158,9 +167,28 @@ media_spanish()
 		regex_episodes='s_[[:space:]]*<a href="'$url_episodes'([^"]*)" class=.*_\1_p'
 		select_episodes
 		url=$url_episodes
-		choice=$((choice-1))  # Prevent add2 to choice when saving cache
+		choice=$((choice-1))  # Prevent add 2 to choice when saving cache
 		save_cache
 	fi
+	reproduce_embedded_link
+}
+
+
+hentai_sub_english()
+{
+# Scrape Hentai
+	gototub=false
+	url="https://hentaihaven.com/"
+	regex='s_<h3><a class="brick-title" href="'$url'series/([^"]*)">.*_\1_p'
+	get_url_titles
+	print_media_titles
+	get_user_choice
+	# Since there are only series, change the url to find episodes
+	regex_episodes='s_<h3><a class="brick-title" href="'$url'([^"]*)">.*_\1_p'
+	url="https://hentaihaven.com/series/"
+	select_episodes
+	regex_embed='s_<iframe src="([^"]*)".*_\1_p'
+	url="https://hentaihaven.com/"
 	reproduce_embedded_link
 }
 
@@ -183,7 +211,7 @@ menu()
 	# Print the menu
 	while [ $selected_option -ne 5 ]
 	do
-		echo -e "Menu\n\n1. Watch movies or series in english\n2. Watch movies or series in spanish\n5.exit"
+		echo -e "Menu\n\n1. Watch movies or series in english\n2. Watch movies or series in spanish\n3. Watch Hentai\n5.exit"
 		read selected_option
 		case $selected_option in
 			1)
@@ -191,6 +219,9 @@ menu()
 			;;
 			2)
 				media_spanish
+			;;
+			3)
+				hentai_sub_english
 			;;
 			5)
 				clear

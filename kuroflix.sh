@@ -177,7 +177,6 @@ media_spanish()
 hentai_sub_english()
 {
 # Scrape Hentai
-	gototub=false
 	url="https://hentaihaven.com/"
 	regex='s_<h3><a class="brick-title" href="'$url'series/([^"]*)">.*_\1_p'
 	get_url_titles
@@ -211,7 +210,7 @@ menu()
 	# Print the menu
 	while [ $selected_option -ne 5 ]
 	do
-		echo -e "Menu\n\n1. Watch movies or series in english\n2. Watch movies or series in spanish\n3. Watch Hentai\n5.exit"
+		echo -e "Menu\n\n1. Watch movies or series in english\n2. Watch movies or series in spanish\n3. Watch Hentai\n4.exit"
 		read selected_option
 		case $selected_option in
 			1)
@@ -223,7 +222,7 @@ menu()
 			3)
 				hentai_sub_english
 			;;
-			5)
+			4)
 				clear
 				echo "Goodbye"
 				exit

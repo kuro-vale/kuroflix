@@ -1,6 +1,6 @@
 #!/bin/bash
-# Dependencies: curl, sed, firefox(Change browser below if you want to use another one)
-BROWSER=firefox
+# Dependencies: curl, sed
+BROWSER=termux-open-url
 
 get_url_titles()
 {

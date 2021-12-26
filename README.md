@@ -1,6 +1,6 @@
-# kuroflix
+# kuroflix-android
 
-A bash script to browse and watch movies or series
+A bash script to browse and watch movies or series on android
 
 For english media this script scrapes [gototub](https://www.gototub.com/)
 
@@ -10,7 +10,11 @@ For hentai sub english this script scrapes [hentaihaven](https://hentaihaven.com
 
 ## Download
 
+First, you need to download [Termux](https://f-droid.org/packages/com.termux/) on your android device, then run
+
 ```bash
+pkg upgrade
+pkg install git
 git clone https://github.com/kuro-vale/kuroflix.git
 ```
 
@@ -20,6 +24,7 @@ Initialize script
 
 ```bash
 cd kuroflix
+git checkout termux
 ./kuroflix.sh
 ```
 
@@ -31,7 +36,6 @@ If you enter an empty space when the script prompts you anything, an error will 
 
 * curl
 * sed
-* firefox (This can be changed)
 
 ## Disclaimer
 

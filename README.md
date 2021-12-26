@@ -1,6 +1,8 @@
-# kuroflix
+# kuroflix-linux
 
-A bash script to browse and watch movies or series
+A bash script to browse and watch movies or series on linux
+
+This script also have an [android version](https://github.com/kuro-vale/kuroflix/tree/termux), please read carefully to make it work
 
 For english media this script scrapes [gototub](https://www.gototub.com/)
 

@@ -4,13 +4,13 @@ BROWSER=firefox
 
 get_url_titles()
 {
-# Get a url list of the media searchead
+# Get a url list of the media searched
 	clear
 	read -p "What do you want to watch?: " search
 	search=$(echo $search | tr ' ' '+')
 	media_links=$(curl -s "$url" -G -d "s=$search" | sed -n -E "$regex")
 	if [ -z "$media_links" ]; then
-		echo -e "No search results for $search\nVerify that you didn't have erros like: 'Abatar' instead of 'Avatar', 'Ironman' instead of 'Iron Man'"
+		echo -e "No search results for $search\nVerify that you didn't have errors like: 'Abatar' instead of 'Avatar', 'Ironman' instead of 'Iron Man'"
 		exit
 	fi
 }

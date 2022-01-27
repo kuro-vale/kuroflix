@@ -42,3 +42,8 @@ I do not own any of the media this script show.
 This script was made for educational purposes only.
 
 What users do with this is not my responsibility.
+
+## Explaining video
+
+[![kuroflix](https://img.youtube.com/vi/OA0pnIdC5fI/0.jpg)](https://youtu.be/OA0pnIdC5fI "kuroflix")
+

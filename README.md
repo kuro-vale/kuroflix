@@ -6,8 +6,6 @@ For english media this script scrapes [gototub](https://www.gototub.com/)
 
 For spanish media this script scrapes [pelisplus](https://pelisplushd.net/)
 
-For hentai sub english this script scrapes [hentaihaven](https://hentaihaven.com/)
-
 ## Download
 
 First, you need to download [Termux](https://f-droid.org/packages/com.termux/) on your android device, then run

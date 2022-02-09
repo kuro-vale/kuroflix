@@ -174,24 +174,6 @@ media_spanish()
 }
 
 
-hentai_sub_english()
-{
-# Scrape Hentai
-	url="https://hentaihaven.com/"
-	regex='s_<h3><a class="brick-title" href="'$url'series/([^"]*)">.*_\1_p'
-	get_url_titles
-	print_media_titles
-	get_user_choice
-	# Since there are only series, change the url to find episodes
-	regex_episodes='s_<h3><a class="brick-title" href="'$url'([^"]*)">.*_\1_p'
-	url="https://hentaihaven.com/series/"
-	select_episodes
-	regex_embed='s_<iframe src="([^"]*)".*_\1_p'
-	url="https://hentaihaven.com/"
-	reproduce_embedded_link
-}
-
-
 menu()
 {
 	clear
@@ -210,7 +192,7 @@ menu()
 	# Print the menu
 	while [ $selected_option -ne 5 ]
 	do
-		echo -e "Menu\n\n1. Watch movies or series in english\n2. Watch movies or series in spanish\n3. Watch Hentai\n4.exit"
+		echo -e "Menu\n\n1. Watch movies or series in english\n2. Watch movies or series in spanish\n3.exit"
 		read selected_option
 		case $selected_option in
 			1)
@@ -220,9 +202,6 @@ menu()
 				media_spanish
 			;;
 			3)
-				hentai_sub_english
-			;;
-			4)
 				clear
 				echo "Goodbye"
 				exit
